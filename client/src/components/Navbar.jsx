@@ -28,10 +28,19 @@ export default function Navbar() {
           </NavLink>
         </div>
 
-        {/* Dynamic Navigation Links based on role */}
+        {/* Navigation Links strictly based on authentication state */}
         <nav className="navbar-links">
-          {/* Patients have dedicated recovery links */}
-          {isPatient ? (
+          {!isAuthenticated ? (
+            /* Unauthenticated Guests only see the Public Landing link */
+            <NavLink
+              to="/"
+              end
+              className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+            >
+              Overview
+            </NavLink>
+          ) : isPatient ? (
+            /* Patients have dedicated care recovery portal */
             <>
               <NavLink
                 to="/patient-portal"
@@ -47,7 +56,7 @@ export default function Navbar() {
               </NavLink>
             </>
           ) : (
-            /* Staff, Admin, and Guests */
+            /* Hospital Staff and Admins */
             <>
               <NavLink
                 to="/"
@@ -57,23 +66,19 @@ export default function Navbar() {
                 Dashboard
               </NavLink>
 
-              {(isStaff || !isAuthenticated) && (
-                <NavLink
-                  to="/predict"
-                  className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
-                >
-                  <PlusCircle size={14} className="nav-inline-icon" /> Admit & Plan Stay
-                </NavLink>
-              )}
+              <NavLink
+                to="/predict"
+                className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+              >
+                <PlusCircle size={14} className="nav-inline-icon" /> Admit & Plan Stay
+              </NavLink>
 
-              {(isStaff || !isAuthenticated) && (
-                <NavLink
-                  to="/history"
-                  className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
-                >
-                  <Users size={14} className="nav-inline-icon" /> Patient Census
-                </NavLink>
-              )}
+              <NavLink
+                to="/history"
+                className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+              >
+                <Users size={14} className="nav-inline-icon" /> Patient Census
+              </NavLink>
 
               <NavLink
                 to="/analytics"
@@ -115,7 +120,7 @@ export default function Navbar() {
             </div>
           ) : (
             <Link to="/login" className="btn-signin">
-              <LogIn size={14} /> Sign In
+              <LogIn size={14} /> Sign In to Portal
             </Link>
           )}
         </div>

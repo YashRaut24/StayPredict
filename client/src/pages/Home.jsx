@@ -1,9 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { BedDouble, Users, CalendarCheck, Clock, ArrowRight, CheckCircle2, ShieldCheck, HeartPulse, Building2, AlertCircle } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { BedDouble, Users, CalendarCheck, Clock, ArrowRight, CheckCircle2, ShieldCheck, HeartPulse, Building2, LogIn, Lock } from 'lucide-react';
 import './Home.css';
 
 export default function Home() {
+  const { isAuthenticated, isPatient, isStaff, isAdmin } = useAuth();
+
   const departmentOccupancy = [
     { name: 'Intensive Care Unit (ICU)', occupied: 46, total: 50, pct: 92, status: 'high' },
     { name: 'Acute Medical Ward', occupied: 168, total: 200, pct: 84, status: 'normal' },
@@ -27,13 +30,34 @@ export default function Home() {
           <p className="hero-description">
             Streamlining patient admission intake, bed allocation timelines, and proactive discharge coordination from the exact moment of clinical admission.
           </p>
+
           <div className="hero-cta-group">
-            <Link to="/predict" className="cta-btn cta-primary">
-              <CalendarCheck size={16} /> Admit & Plan Patient Stay <ArrowRight size={16} />
-            </Link>
-            <Link to="/history" className="cta-btn cta-secondary">
-              <Users size={16} /> View Inpatient Census
-            </Link>
+            {!isAuthenticated ? (
+              /* Public / Guest CTAs */
+              <>
+                <Link to="/login" className="cta-btn cta-primary">
+                  <LogIn size={16} /> Sign In to Access Portal <ArrowRight size={16} />
+                </Link>
+                <Link to="/login" className="cta-btn cta-secondary">
+                  <Lock size={15} /> Clinical Staff & Patient Login
+                </Link>
+              </>
+            ) : isPatient ? (
+              /* Patient CTA */
+              <Link to="/patient-portal" className="cta-btn cta-primary">
+                <HeartPulse size={16} /> View My Recovery & Discharge Plan <ArrowRight size={16} />
+              </Link>
+            ) : (
+              /* Staff / Admin CTAs */
+              <>
+                <Link to="/predict" className="cta-btn cta-primary">
+                  <CalendarCheck size={16} /> Admit & Plan Patient Stay <ArrowRight size={16} />
+                </Link>
+                <Link to="/history" className="cta-btn cta-secondary">
+                  <Users size={16} /> View Inpatient Census
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -138,6 +162,24 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Access Restriction Notice for Guests */}
+      {!isAuthenticated && (
+        <section className="auth-prompt-card">
+          <div className="prompt-content">
+            <Lock size={22} className="prompt-icon" />
+            <div>
+              <h4 className="prompt-title">Clinical Authorization Required</h4>
+              <p className="prompt-desc">
+                Inpatient admission, bed management, and medical census records are restricted to authenticated clinical staff, hospital administrators, and registered patients.
+              </p>
+            </div>
+            <Link to="/login" className="prompt-btn">
+              Sign In to Continue
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* Clinical Guidance Banner */}
       <section className="guidance-banner">
