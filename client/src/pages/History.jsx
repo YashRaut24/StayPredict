@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getPredictionHistory } from '../services/api';
-import { RefreshCw, Search, Filter, Calendar, Clock, Database, AlertCircle } from 'lucide-react';
+import { RefreshCw, Search, Filter, Calendar, Users, AlertCircle, BedDouble } from 'lucide-react';
 import './History.css';
 
 export default function History() {
@@ -18,7 +18,7 @@ export default function History() {
       const res = await getPredictionHistory();
       setHistory(res.data || []);
     } catch (err) {
-      setError(err.message || 'Unable to retrieve prediction history from MongoDB.');
+      setError(err.message || 'Unable to retrieve inpatient census records.');
     } finally {
       setIsLoading(false);
     }
@@ -48,9 +48,9 @@ export default function History() {
     <div className="history-page">
       <div className="history-header">
         <div>
-          <h1 className="history-title">Clinical Prediction Audit Log</h1>
+          <h1 className="history-title">Inpatient Census & Bed Directory</h1>
           <p className="history-subtitle">
-            Immutable audit record of all length-of-stay inferences persisted in MongoDB.
+            Central registry of admitted patients, projected hospitalization timelines, and scheduled discharge targets.
           </p>
         </div>
         <button
@@ -60,7 +60,7 @@ export default function History() {
           disabled={isLoading}
         >
           <RefreshCw size={14} className={isLoading ? 'spinning' : ''} />
-          <span>Refresh Audit Trail</span>
+          <span>Refresh Census</span>
         </button>
       </div>
 
@@ -78,7 +78,7 @@ export default function History() {
           <input
             type="text"
             className="search-input"
-            placeholder="Search by diagnosis, insurance, gender..."
+            placeholder="Search by diagnosis, insurance, demographic..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -97,7 +97,7 @@ export default function History() {
               <option value="Hypertension">Hypertension</option>
               <option value="Asthma">Asthma</option>
               <option value="Arthritis">Arthritis</option>
-              <option value="Cancer">Cancer</option>
+              <option value="Cancer">Cancer / Oncology</option>
               <option value="Obesity">Obesity</option>
             </select>
           </div>
@@ -109,7 +109,7 @@ export default function History() {
               value={filterAdmission}
               onChange={(e) => setFilterAdmission(e.target.value)}
             >
-              <option value="All">All Types</option>
+              <option value="All">All Urgency Levels</option>
               <option value="Emergency">Emergency</option>
               <option value="Urgent">Urgent</option>
               <option value="Elective">Elective</option>
@@ -118,21 +118,21 @@ export default function History() {
         </div>
       </div>
 
-      {/* History Table */}
+      {/* Census Table */}
       <div className="history-table-card">
         {isLoading ? (
           <div className="history-loading">
             <RefreshCw size={24} className="spinning" />
-            <p>Loading historical prediction records...</p>
+            <p>Loading inpatient directory records...</p>
           </div>
         ) : filteredHistory.length === 0 ? (
           <div className="history-empty">
-            <Database size={36} className="empty-icon" />
-            <h3>No Prediction Records Found</h3>
+            <Users size={36} className="empty-icon" />
+            <h3>No Patient Records Found</h3>
             <p>
               {history.length === 0
-                ? 'No predictions have been recorded yet. Navigate to "Predict LOS" to generate your first clinical projection.'
-                : 'No records match your selected filter criteria. Try adjusting the search query or filters.'}
+                ? 'No inpatient admissions have been recorded yet. Navigate to "Admit & Plan Stay" to admit your first patient.'
+                : 'No patients match your selected filter criteria. Try adjusting your search query or filters.'}
             </p>
           </div>
         ) : (
@@ -140,14 +140,14 @@ export default function History() {
             <table className="clinical-table">
               <thead>
                 <tr>
-                  <th>Timestamp</th>
+                  <th>Admit Time</th>
                   <th>Patient Profile</th>
                   <th>Clinical Diagnosis</th>
-                  <th>Admission Details</th>
+                  <th>Acuity & Payer</th>
                   <th>Admission Date</th>
-                  <th>Projected Stay</th>
-                  <th>Est. Discharge</th>
-                  <th>Model</th>
+                  <th>Expected Stay</th>
+                  <th>Target Discharge</th>
+                  <th>Bed Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -163,8 +163,14 @@ export default function History() {
                   }
 
                   let badgeClass = 'badge-normal';
-                  if (days <= 7) badgeClass = 'badge-low';
-                  if (days > 15) badgeClass = 'badge-high';
+                  let bedStatus = 'Bed Assigned';
+                  if (days <= 7) {
+                    badgeClass = 'badge-low';
+                    bedStatus = 'Short-Stay Unit';
+                  } else if (days > 15) {
+                    badgeClass = 'badge-high';
+                    bedStatus = 'Specialty Inpatient';
+                  }
 
                   return (
                     <tr key={item._id}>
@@ -200,8 +206,10 @@ export default function History() {
                       <td className="cell-discharge">
                         {dischargeStr}
                       </td>
-                      <td className="cell-model">
-                        v{item.modelVersion || '1.0.0'}
+                      <td>
+                        <span className="bed-status-pill">
+                          <BedDouble size={12} /> {bedStatus}
+                        </span>
                       </td>
                     </tr>
                   );

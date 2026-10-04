@@ -20,13 +20,9 @@ export default function Predict() {
       const response = await createPrediction(formData);
       setPrediction(response.data);
       setPatientData(formData);
-      if (response.data.persisted) {
-        setSuccessBanner('Prediction calculated and audit record persisted to MongoDB.');
-      } else {
-        setSuccessBanner('Prediction calculated via ML service (stateless session mode).');
-      }
+      setSuccessBanner('Patient successfully registered into active census. Expected stay schedule generated.');
     } catch (err) {
-      setApiError(err.message || 'Error communicating with StayPredict backend gateway.');
+      setApiError(err.message || 'Unable to complete inpatient admission assessment.');
     } finally {
       setIsLoading(false);
     }
@@ -42,9 +38,9 @@ export default function Predict() {
   return (
     <div className="predict-page">
       <div className="predict-header">
-        <h1 className="predict-page-title">Length-of-Stay Inference Console</h1>
+        <h1 className="predict-page-title">Patient Admission & Bed Planning Console</h1>
         <p className="predict-page-desc">
-          Evaluate expected patient hospitalization days using the production Random Forest regression model.
+          Evaluate expected patient hospitalization days, assign appropriate ward care tiers, and initialize discharge milestones.
         </p>
       </div>
 

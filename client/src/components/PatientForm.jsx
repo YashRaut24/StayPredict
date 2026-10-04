@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Send, RotateCcw, Sparkles } from 'lucide-react';
+import { CalendarCheck, RotateCcw, Stethoscope } from 'lucide-react';
 import './PatientForm.css';
 
 const PRESETS = [
@@ -16,7 +16,7 @@ const PRESETS = [
     },
   },
   {
-    name: 'Adult Urgent (Cancer)',
+    name: 'Adult Urgent (Oncology / Cancer)',
     data: {
       age: 54,
       gender: 'Male',
@@ -28,7 +28,7 @@ const PRESETS = [
     },
   },
   {
-    name: 'Young Elective (Arthritis)',
+    name: 'Young Adult Elective (Arthritis)',
     data: {
       age: 29,
       gender: 'Female',
@@ -80,7 +80,7 @@ export default function PatientForm({ onSubmit, isLoading }) {
       return;
     }
     if (!formData.dateOfAdmission) {
-      setError('Please specify the date of admission.');
+      setError('Please select an admission date.');
       return;
     }
 
@@ -91,15 +91,15 @@ export default function PatientForm({ onSubmit, isLoading }) {
   return (
     <div className="patient-form-card">
       <div className="form-header">
-        <h2 className="form-title">Patient Clinical Admission Data</h2>
+        <h2 className="form-title">Inpatient Admission Details</h2>
         <p className="form-subtitle">
-          Input strictly pre-admission clinical indicators. All post-admission variables are excluded to prevent target leakage.
+          Record initial patient admission parameters to generate bed allocation timelines and an estimated discharge window.
         </p>
       </div>
 
       <div className="preset-bar">
         <span className="preset-label">
-          <Sparkles size={14} /> Quick Demo Presets:
+          <Stethoscope size={14} /> Quick Clinical Presets:
         </span>
         <div className="preset-buttons">
           {PRESETS.map((preset, idx) => (
@@ -159,7 +159,7 @@ export default function PatientForm({ onSubmit, isLoading }) {
           {/* Blood Type */}
           <div className="form-group">
             <label htmlFor="bloodType" className="form-label">
-              Blood Type <span className="required">*</span>
+              Blood Group <span className="required">*</span>
             </label>
             <select
               id="bloodType"
@@ -183,7 +183,7 @@ export default function PatientForm({ onSubmit, isLoading }) {
           {/* Medical Condition */}
           <div className="form-group">
             <label htmlFor="medicalCondition" className="form-label">
-              Primary Diagnosis / Condition <span className="required">*</span>
+              Primary Diagnosis / Clinical Condition <span className="required">*</span>
             </label>
             <select
               id="medicalCondition"
@@ -197,15 +197,15 @@ export default function PatientForm({ onSubmit, isLoading }) {
               <option value="Hypertension">Hypertension</option>
               <option value="Asthma">Asthma</option>
               <option value="Arthritis">Arthritis</option>
-              <option value="Cancer">Cancer</option>
-              <option value="Obesity">Obesity</option>
+              <option value="Cancer">Oncology / Cancer</option>
+              <option value="Obesity">Obesity Management</option>
             </select>
           </div>
 
           {/* Admission Type */}
           <div className="form-group">
             <label htmlFor="admissionType" className="form-label">
-              Admission Acuity <span className="required">*</span>
+              Admission Urgency Level <span className="required">*</span>
             </label>
             <select
               id="admissionType"
@@ -215,16 +215,16 @@ export default function PatientForm({ onSubmit, isLoading }) {
               value={formData.admissionType}
               onChange={handleChange}
             >
-              <option value="Emergency">Emergency</option>
-              <option value="Urgent">Urgent</option>
-              <option value="Elective">Elective</option>
+              <option value="Emergency">Emergency (Immediate Care)</option>
+              <option value="Urgent">Urgent (Within 24 Hours)</option>
+              <option value="Elective">Elective (Scheduled Inpatient)</option>
             </select>
           </div>
 
           {/* Insurance Provider */}
           <div className="form-group">
             <label htmlFor="insuranceProvider" className="form-label">
-              Insurance Provider <span className="required">*</span>
+              Insurance / Payer Coverage <span className="required">*</span>
             </label>
             <select
               id="insuranceProvider"
@@ -234,9 +234,9 @@ export default function PatientForm({ onSubmit, isLoading }) {
               value={formData.insuranceProvider}
               onChange={handleChange}
             >
-              <option value="Aetna">Aetna</option>
-              <option value="Blue Cross">Blue Cross</option>
-              <option value="Cigna">Cigna</option>
+              <option value="Aetna">Aetna Healthcare</option>
+              <option value="Blue Cross">Blue Cross Blue Shield</option>
+              <option value="Cigna">Cigna Health</option>
               <option value="Medicare">Medicare</option>
               <option value="UnitedHealthcare">UnitedHealthcare</option>
             </select>
@@ -257,7 +257,7 @@ export default function PatientForm({ onSubmit, isLoading }) {
               onChange={handleChange}
             />
             <span className="field-hint">
-              Extracts Year, Month, Day, and Day of Week for temporal admission pattern modeling.
+              Used to schedule clinical care milestones, ward bed booking, and expected discharge review.
             </span>
           </div>
         </div>
@@ -269,7 +269,7 @@ export default function PatientForm({ onSubmit, isLoading }) {
             onClick={handleReset}
             disabled={isLoading}
           >
-            <RotateCcw size={15} /> Reset
+            <RotateCcw size={15} /> Reset Form
           </button>
 
           <button
@@ -278,10 +278,10 @@ export default function PatientForm({ onSubmit, isLoading }) {
             disabled={isLoading}
           >
             {isLoading ? (
-              <span className="btn-loading">Inferring LOS...</span>
+              <span className="btn-loading">Calculating Inpatient Stay Plan...</span>
             ) : (
               <>
-                <Send size={15} /> Compute Predicted Stay
+                <CalendarCheck size={16} /> Plan Inpatient Stay
               </>
             )}
           </button>

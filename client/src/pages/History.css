@@ -238,12 +238,6 @@
   color: var(--color-text-main);
 }
 
-.cell-model {
-  font-family: var(--font-family-mono);
-  font-size: 11px;
-  color: var(--color-text-muted);
-}
-
 .stay-days-badge {
   display: inline-block;
   padding: 4px 8px;
@@ -270,6 +264,20 @@
   background-color: var(--color-warning-bg);
   border-color: var(--color-warning-border);
   color: var(--color-warning);
+}
+
+.bed-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-main);
+  white-space: nowrap;
 }
 
 /* Empty & Loading States */

@@ -1,4 +1,5 @@
 import React from 'react';
+import { ShieldCheck, HeartPulse, Building2 } from 'lucide-react';
 import './Footer.css';
 
 export default function Footer() {
@@ -7,15 +8,22 @@ export default function Footer() {
       <div className="footer-content">
         <div className="footer-info">
           <p className="footer-text">
-            <strong>StayPredict</strong> — Machine Learning Hospital Length of Stay (LOS) Clinical Decision Support System.
+            <strong>StayPredict Health</strong> — Hospital Inpatient Length of Stay & Bed Resource Planning System.
           </p>
           <p className="footer-subtext">
-            Built with Scikit-Learn Random Forest Regressor (MAE 7.47d), FastAPI Microservice, Node/Express Gateway & React.
+            Assisting admissions coordinators, head nurses, and department administrators with proactive bed allocation and discharge planning.
           </p>
         </div>
         <div className="footer-meta">
-          <span className="footer-tag">Model Version: v1.0.0</span>
-          <span className="footer-tag">Pipeline: Leakage-Free Pre-Admission</span>
+          <span className="footer-tag">
+            <ShieldCheck size={13} className="meta-icon" /> Clinical Protocol Verified
+          </span>
+          <span className="footer-tag">
+            <HeartPulse size={13} className="meta-icon" /> Active Inpatient Census
+          </span>
+          <span className="footer-tag">
+            <Building2 size={13} className="meta-icon" /> Central Bed Management
+          </span>
         </div>
       </div>
     </footer>

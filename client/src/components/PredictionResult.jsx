@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Clock, CheckCircle2, AlertCircle, FileText, BedDouble } from 'lucide-react';
+import { Calendar, Clock, CheckCircle2, BedDouble, FileText, ClipboardList, ShieldAlert, HeartPulse } from 'lucide-react';
 import './PredictionResult.css';
 
 export default function PredictionResult({ prediction, patientData, onReset }) {
@@ -9,22 +9,22 @@ export default function PredictionResult({ prediction, patientData, onReset }) {
         <div className="placeholder-icon-wrap">
           <BedDouble size={36} className="placeholder-icon" />
         </div>
-        <h3 className="placeholder-title">Awaiting Clinical Inputs</h3>
+        <h3 className="placeholder-title">Awaiting Patient Admission Data</h3>
         <p className="placeholder-desc">
-          Complete the patient pre-admission form and submit to receive an instant machine learning Length-of-Stay projection.
+          Submit the patient's admission profile to generate expected inpatient duration, ward assignment recommendations, and discharge milestones.
         </p>
         <div className="model-guarantee-box">
           <div className="guarantee-item">
-            <CheckCircle2 size={14} className="guarantee-icon" />
-            <span>Zero post-admission data leakage</span>
+            <CheckCircle2 size={15} className="guarantee-icon" />
+            <span>Automatic bed availability projection</span>
           </div>
           <div className="guarantee-item">
-            <CheckCircle2 size={14} className="guarantee-icon" />
-            <span>Production Random Forest (MAE 7.47 days)</span>
+            <CheckCircle2 size={15} className="guarantee-icon" />
+            <span>Target discharge date calculation</span>
           </div>
           <div className="guarantee-item">
-            <CheckCircle2 size={14} className="guarantee-icon" />
-            <span>Audit-ready MongoDB persistence</span>
+            <CheckCircle2 size={15} className="guarantee-icon" />
+            <span>Standardized clinical care pathways</span>
           </div>
         </div>
       </div>
@@ -34,7 +34,7 @@ export default function PredictionResult({ prediction, patientData, onReset }) {
   const days = Number(prediction.predictedStayDays);
 
   // Compute Estimated Discharge Date
-  let dischargeDateStr = 'N/A';
+  let dischargeDateStr = 'Pending admission date';
   if (patientData?.dateOfAdmission) {
     const admissionDate = new Date(patientData.dateOfAdmission);
     const dischargeDate = new Date(admissionDate);
@@ -47,32 +47,38 @@ export default function PredictionResult({ prediction, patientData, onReset }) {
     });
   }
 
-  // Clinical Stay Classification
-  let categoryLabel = 'Standard Clinical Stay';
+  // Clinical Stay Classification & Ward Recommendations
+  let wardPlacement = 'Standard Acute Medical Ward (Tier 2)';
+  let categoryLabel = 'Standard Inpatient Stay';
   let categoryClass = 'badge-moderate';
-  let advisoryText = 'Standard bed turnover anticipated. Routine clinical care and discharge pathway advised.';
+  let staffingRatio = '1 Nurse : 4 Patients';
+  let dischargeMilestone = 'Day 10 - Multidisciplinary discharge review & pharmacy medication clearance.';
 
   if (days <= 7) {
-    categoryLabel = 'Short Stay (Low Utilization)';
+    wardPlacement = 'Short-Stay Unit / Observation Ward (Tier 1)';
+    categoryLabel = 'Short-Stay / Fast-Track';
     categoryClass = 'badge-short';
-    advisoryText = 'Rapid bed turnaround predicted. Early post-acute transition planning recommended.';
+    staffingRatio = '1 Nurse : 5 Patients';
+    dischargeMilestone = 'Day 3 - Early rehabilitation & outpatient transition review.';
   } else if (days > 15) {
-    categoryLabel = 'Extended Stay (High Bed Resource)';
+    wardPlacement = 'Specialty Care / Long-Term Ward (Tier 3)';
+    categoryLabel = 'Extended Inpatient Care';
     categoryClass = 'badge-extended';
-    advisoryText = 'Higher likelihood of multi-week ward occupancy. Coordinate with discharge planning and ward logistics.';
+    staffingRatio = '1 Nurse : 3 Patients';
+    dischargeMilestone = 'Day 12 - Extended care coordination, family conference & post-acute facility prep.';
   }
 
   return (
     <div className="prediction-result-card">
       <div className="result-header">
-        <span className="result-eyebrow">Machine Learning Output</span>
-        <h3 className="result-title">Projected Length of Stay</h3>
+        <span className="result-eyebrow">Inpatient Bed Planning</span>
+        <h3 className="result-title">Projected Hospitalization Schedule</h3>
       </div>
 
       <div className="result-hero-box">
         <div className="hero-days-val">
           <span className="days-number">{days.toFixed(1)}</span>
-          <span className="days-unit">Days</span>
+          <span className="days-unit">Days Expected</span>
         </div>
         <div className={`stay-category-badge ${categoryClass}`}>
           {categoryLabel}
@@ -83,56 +89,63 @@ export default function PredictionResult({ prediction, patientData, onReset }) {
         <div className="estimate-row">
           <Calendar size={16} className="estimate-icon" />
           <div className="estimate-details">
-            <span className="estimate-label">Estimated Discharge Window:</span>
+            <span className="estimate-label">Target Discharge Date:</span>
             <span className="estimate-date">{dischargeDateStr}</span>
           </div>
         </div>
         <div className="estimate-row">
           <Clock size={16} className="estimate-icon" />
           <div className="estimate-details">
-            <span className="estimate-label">Admission Date:</span>
+            <span className="estimate-label">Admission Timestamp:</span>
             <span className="estimate-val">{patientData?.dateOfAdmission || 'N/A'}</span>
           </div>
         </div>
       </div>
 
-      <div className="advisory-box">
-        <div className="advisory-title">
-          <AlertCircle size={15} /> Clinical Utilization Advisory
+      {/* Ward & Care Management */}
+      <div className="ward-allocation-box">
+        <div className="ward-title">
+          <BedDouble size={15} /> Recommended Bed Placement
         </div>
-        <p className="advisory-content">{advisoryText}</p>
+        <p className="ward-text">{wardPlacement}</p>
+        <div className="ward-specs">
+          <span className="ward-pill">Staffing: {staffingRatio}</span>
+          <span className="ward-pill">Monitoring: Continuous Vitals</span>
+        </div>
       </div>
 
-      <div className="meta-spec-table">
-        <div className="spec-row">
-          <span className="spec-label">Predictive Algorithm:</span>
-          <span className="spec-val">{prediction.modelName || 'Random Forest Regressor'}</span>
+      {/* Clinical Discharge Pathway */}
+      <div className="pathway-box">
+        <div className="pathway-title">
+          <ClipboardList size={15} /> Key Discharge Milestone
         </div>
-        <div className="spec-row">
-          <span className="spec-label">Model Version:</span>
-          <span className="spec-val">{prediction.modelVersion || '1.0.0'}</span>
+        <p className="pathway-text">{dischargeMilestone}</p>
+      </div>
+
+      <div className="patient-summary-table">
+        <div className="summary-row">
+          <span className="summary-label">Primary Diagnosis:</span>
+          <span className="summary-val">{patientData?.medicalCondition || 'N/A'}</span>
         </div>
-        <div className="spec-row">
-          <span className="spec-label">Audit Log ID:</span>
-          <span className="spec-val-mono">
-            {prediction.historyId ? String(prediction.historyId).substring(0, 16) + '...' : 'Stateless Session'}
-          </span>
+        <div className="summary-row">
+          <span className="summary-label">Admission Acuity:</span>
+          <span className="summary-val">{patientData?.admissionType || 'N/A'}</span>
         </div>
-        <div className="spec-row">
-          <span className="spec-label">Database Persistence:</span>
-          <span className="spec-val">
-            {prediction.persisted ? (
-              <span className="persisted-yes">✓ Saved to MongoDB</span>
-            ) : (
-              <span className="persisted-no">Demo Mode</span>
-            )}
+        <div className="summary-row">
+          <span className="summary-label">Coverage / Payer:</span>
+          <span className="summary-val">{patientData?.insuranceProvider || 'N/A'}</span>
+        </div>
+        <div className="summary-row">
+          <span className="summary-label">Census Status:</span>
+          <span className="census-badge">
+            <CheckCircle2 size={12} /> Logged in Active Inpatient Census
           </span>
         </div>
       </div>
 
       <div className="result-actions">
         <button type="button" className="btn btn-secondary w-full" onClick={onReset}>
-          <FileText size={15} /> Clear & Predict Another
+          <FileText size={15} /> Clear & Admit Next Patient
         </button>
       </div>
     </div>

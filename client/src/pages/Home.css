@@ -16,7 +16,7 @@
 }
 
 .hero-content {
-  max-width: 800px;
+  max-width: 820px;
 }
 
 .hero-badge {
@@ -36,11 +36,11 @@
 }
 
 .hero-title {
-  font-size: 36px;
+  font-size: 34px;
   font-weight: 800;
   color: var(--color-text-main);
-  line-height: 1.2;
-  margin-bottom: 16px;
+  line-height: 1.25;
+  margin-bottom: 14px;
   letter-spacing: -0.5px;
 }
 
@@ -108,6 +108,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  text-align: left;
 }
 
 .metric-label {
@@ -132,11 +133,11 @@
 }
 
 .metric-note {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--color-text-muted);
 }
 
-/* Architecture Workflow */
+/* Workflow Section */
 .architecture-section {
   display: flex;
   flex-direction: column;
@@ -174,6 +175,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  text-align: left;
 }
 
 .step-num {
@@ -195,135 +197,189 @@
   line-height: 1.5;
 }
 
-/* Leakage Banner */
-.leakage-banner {
+/* Ward Utilization Section */
+.ward-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.ward-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.ward-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 14px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.ward-heading {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.ward-subheading {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.ward-live-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-success);
+  background-color: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-success);
+  border-radius: 50%;
+}
+
+.department-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.department-item {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.dept-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dept-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.dept-pct-tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+}
+
+.dept-pct-tag.high {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning);
+  border-color: var(--color-warning-border);
+}
+
+.dept-pct-tag.normal {
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary);
+  border-color: var(--color-primary-border);
+}
+
+.dept-pct-tag.low {
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
+  border-color: var(--color-success-border);
+}
+
+.dept-progress-bar {
+  height: 6px;
+  background-color: var(--color-border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.dept-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+}
+
+.dept-progress-fill.high {
+  background-color: var(--color-warning);
+}
+
+.dept-progress-fill.normal {
+  background-color: var(--color-primary);
+}
+
+.dept-progress-fill.low {
+  background-color: var(--color-success);
+}
+
+.dept-footer-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+/* Guidance Banner */
+.guidance-banner {
   background-color: #ffffff;
-  border-left: 4px solid var(--color-warning);
+  border-left: 4px solid var(--color-primary);
   border-top: 1px solid var(--color-border);
   border-right: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: 20px 24px;
   box-shadow: var(--shadow-sm);
+  text-align: left;
 }
 
-.leakage-content {
+.guidance-content {
   display: flex;
   align-items: flex-start;
   gap: 16px;
 }
 
-.leakage-icon {
-  color: var(--color-warning);
+.guidance-icon {
+  color: var(--color-primary);
   flex-shrink: 0;
   margin-top: 2px;
 }
 
-.leakage-title {
+.guidance-title {
   font-size: 15px;
   font-weight: 700;
   color: var(--color-text-main);
   margin-bottom: 6px;
 }
 
-.leakage-desc {
+.guidance-desc {
   font-size: 13px;
   color: var(--color-text-muted);
   line-height: 1.5;
 }
 
-.leakage-desc code {
-  background-color: var(--color-bg);
-  border: 1px solid var(--color-border);
-  padding: 2px 5px;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  color: var(--color-text-main);
-  font-family: var(--font-family-mono);
-}
-
-/* System Health Section */
-.health-section {
-  display: flex;
-  flex-direction: column;
-}
-
-.health-card {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: 20px 24px;
-  box-shadow: var(--shadow-sm);
-}
-
-.health-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid var(--color-border);
-  padding-bottom: 12px;
-  margin-bottom: 16px;
-}
-
-.health-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--color-text-main);
-}
-
-.health-timestamp {
-  font-size: 12px;
-  color: var(--color-text-muted);
-}
-
-.health-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-
-.health-item {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.health-name {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--color-text-muted);
-}
-
-.health-status-tag {
-  font-size: 13px;
-  font-weight: 600;
-  padding: 6px 10px;
-  border-radius: var(--radius-sm);
-  border: 1px solid transparent;
-}
-
-.health-status-tag.healthy {
-  background-color: var(--color-success-bg);
-  color: var(--color-success);
-  border-color: var(--color-success-border);
-}
-
-.health-status-tag.warning {
-  background-color: var(--color-warning-bg);
-  color: var(--color-warning);
-  border-color: var(--color-warning-border);
-}
-
-.health-status-tag.degraded {
-  background-color: var(--color-danger-bg);
-  color: var(--color-danger);
-  border-color: var(--color-danger-border);
-}
-
 @media (max-width: 900px) {
   .metrics-section,
   .workflow-grid,
-  .health-grid {
+  .department-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -331,7 +387,7 @@
 @media (max-width: 600px) {
   .metrics-section,
   .workflow-grid,
-  .health-grid {
+  .department-grid {
     grid-template-columns: 1fr;
   }
   .hero-title {

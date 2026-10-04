@@ -1,11 +1,11 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import Predict from './pages/Predict';
 import History from './pages/History';
-import ModelInfo from './pages/ModelInfo';
+import WardAnalytics from './pages/WardAnalytics';
 import './App.css';
 
 export default function App() {
@@ -18,7 +18,8 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/predict" element={<Predict />} />
             <Route path="/history" element={<History />} />
-            <Route path="/model-info" element={<ModelInfo />} />
+            <Route path="/analytics" element={<WardAnalytics />} />
+            <Route path="/model-info" element={<Navigate to="/analytics" replace />} />
           </Routes>
         </main>
         <Footer />
