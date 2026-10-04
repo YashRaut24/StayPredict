@@ -3,7 +3,16 @@ import Prediction from '../models/Prediction.js';
 import { callMLServicePredict, checkMLServiceHealth } from '../services/ml.service.js';
 
 export const createPrediction = async (req, res) => {
-    const { age, gender, bloodType, medicalCondition, insuranceProvider, admissionType, dateOfAdmission } = req.body;
+    const {
+        age,
+        gender,
+        bloodType,
+        medicalCondition,
+        insuranceProvider,
+        admissionType,
+        dateOfAdmission,
+        patientName
+    } = req.body;
 
     // Basic validation at Express Gateway
     if (!age || !gender || !bloodType || !medicalCondition || !insuranceProvider || !admissionType || !dateOfAdmission) {
@@ -23,6 +32,9 @@ export const createPrediction = async (req, res) => {
         if (mongoose.connection.readyState === 1) {
             try {
                 savedRecord = await Prediction.create({
+                    userId: req.user?.id || null,
+                    patientName: patientName || (req.user ? req.user.name : 'Inpatient Record'),
+                    patientEmail: req.user ? req.user.email : '',
                     inputFeatures: {
                         age: Number(age),
                         gender,
@@ -72,7 +84,19 @@ export const getPredictionHistory = async (req, res) => {
     }
 
     try {
-        const history = await Prediction.find()
+        let filter = {};
+
+        // Role-based visibility: Patients only see their own admissions!
+        if (req.user && req.user.role === 'patient') {
+            filter = {
+                $or: [
+                    { userId: req.user.id },
+                    { patientEmail: req.user.email }
+                ]
+            };
+        }
+
+        const history = await Prediction.find(filter)
             .sort({ createdAt: -1 })
             .limit(50)
             .lean();
@@ -80,12 +104,13 @@ export const getPredictionHistory = async (req, res) => {
         return res.status(200).json({
             success: true,
             count: history.length,
+            role: req.user?.role || 'guest',
             data: history
         });
     } catch (error) {
         return res.status(500).json({
             success: false,
-            message: 'Failed to retrieve prediction history: ' + error.message
+            message: 'Failed to retrieve inpatient records: ' + error.message
         });
     }
 };

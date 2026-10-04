@@ -2,6 +2,19 @@ import mongoose from 'mongoose';
 
 const PredictionSchema = new mongoose.Schema(
     {
+        userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            default: null
+        },
+        patientName: {
+            type: String,
+            default: 'Inpatient Record'
+        },
+        patientEmail: {
+            type: String,
+            default: ''
+        },
         inputFeatures: {
             age: { type: Number, required: true },
             gender: { type: String, required: true },
