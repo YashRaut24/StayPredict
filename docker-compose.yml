@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  # 1. MongoDB Database
+  mongo:
+    image: mongo:7.0
+    container_name: staypredict-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - staypredict-net
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. FastAPI ML Microservice
+  ml-service:
+    build:
+      context: ./ml-service
+      dockerfile: Dockerfile
+    container_name: staypredict-ml-service
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./ml/models:/app/ml/models:ro
+    environment:
+      - PORT=8000
+    networks:
+      - staypredict-net
+    depends_on:
+      - mongo
+
+  # 3. Node Express API Gateway
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: staypredict-server
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGO_URI=mongodb://mongo:27017/staypredict
+      - ML_SERVICE_URL=http://ml-service:8000
+      - JWT_SECRET=staypredict_clinical_production_jwt_secret_2026
+    networks:
+      - staypredict-net
+    depends_on:
+      mongo:
+        condition: service_healthy
+      ml-service:
+        condition: service_started
+
+  # 4. React Client (SPA)
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: staypredict-client
+    restart: always
+    ports:
+      - "3000:80"
+    networks:
+      - staypredict-net
+    depends_on:
+      - server
+
+networks:
+  staypredict-net:
+    driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local
