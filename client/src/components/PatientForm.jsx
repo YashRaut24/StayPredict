@@ -366,23 +366,23 @@ export default function PatientForm({ onSubmit, isLoading }) {
         <div className="form-actions">
           <button
             type="button"
-            className="btn-reset"
+            className="btn btn-secondary btn-reset"
             onClick={handleReset}
             disabled={isLoading}
           >
-            <RotateCcw size={15} /> Reset Form
+            <RotateCcw size={16} /> Reset Form
           </button>
 
           <button
             type="submit"
-            className="btn-submit"
+            className="btn btn-primary btn-submit"
             disabled={isLoading}
           >
             {isLoading ? (
               <span className="spinner-text">Evaluating Random Forest Model...</span>
             ) : (
               <>
-                <CalendarCheck size={16} /> Admit & Plan Inpatient Stay
+                <CalendarCheck size={18} /> Admit & Plan Inpatient Stay
               </>
             )}
           </button>
