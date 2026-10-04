@@ -1,0 +1,198 @@
+.med-schedule-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  text-align: left;
+  animation: fadeInSoft 0.3s ease-out;
+}
+
+.med-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.med-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--color-teal-bg);
+  border: 1px solid var(--color-teal-border);
+  color: var(--color-teal);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  width: fit-content;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.med-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-text-main);
+  letter-spacing: -0.2px;
+}
+
+.med-subtitle {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.med-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.med-item {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.med-item:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-border-dark);
+}
+
+.med-item.med-taken {
+  background-color: var(--color-success-bg);
+  border-color: var(--color-success-border);
+}
+
+.med-checkbox-col {
+  flex-shrink: 0;
+}
+
+.med-check-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-surface);
+  color: #ffffff;
+  transition: all 0.15s ease;
+}
+
+.med-check-circle.checked {
+  background-color: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.med-info-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.med-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.med-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.med-dose-pill {
+  font-size: 11px;
+  font-weight: 700;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-main);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-mono);
+}
+
+.med-type-tag {
+  font-size: 10.5px;
+  font-weight: 600;
+  background-color: var(--color-primary-subtle);
+  border: 1px solid var(--color-primary-border);
+  color: var(--color-primary);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.med-timing-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.timing-icon {
+  color: var(--color-warning);
+}
+
+.timing-text {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.med-instructions {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+.med-status-col {
+  flex-shrink: 0;
+}
+
+.med-status-label {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.med-status-label.taken {
+  color: var(--color-success);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-success-border);
+}
+
+.med-status-label.pending {
+  color: var(--color-text-muted);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.med-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border);
+  padding-top: 10px;
+}
+
+.footer-icon {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}

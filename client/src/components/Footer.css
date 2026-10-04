@@ -6,14 +6,15 @@
 }
 
 .footer-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px;
+  width: 100%;
+  margin: 0;
+  padding: 24px 32px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
+  box-sizing: border-box;
 }
 
 .footer-info {

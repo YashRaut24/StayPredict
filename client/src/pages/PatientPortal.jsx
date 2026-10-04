@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getPredictionHistory } from '../services/api';
-import { Calendar, Clock, BedDouble, CheckCircle2, AlertCircle, Phone, FileText, HeartPulse, ChevronRight, User, HelpCircle, Activity } from 'lucide-react';
+import { Calendar, Clock, BedDouble, CheckCircle2, AlertCircle, Phone, FileText, HeartPulse, ChevronRight, User, HelpCircle, Activity, ShieldAlert } from 'lucide-react';
+import RedFlagAlerts from '../components/RedFlagAlerts';
+import MedicationSchedule from '../components/MedicationSchedule';
 import './PatientPortal.css';
 
 export default function PatientPortal() {
@@ -231,6 +233,12 @@ export default function PatientPortal() {
               ))}
             </div>
           </div>
+
+          {/* Take-Home Medication Reconciliation & Schedule */}
+          <MedicationSchedule condition={input.medicalCondition} />
+
+          {/* Emergency Red-Flag Warning Signs & Clinical Triage */}
+          <RedFlagAlerts condition={input.medicalCondition} />
 
           {/* Pre-Discharge Questions to Ask Doctor */}
           <div className="questions-card">
