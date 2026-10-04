@@ -7,8 +7,6 @@ const PRESETS = [
   {
     name: 'Elderly Emergency (Asthma)',
     data: {
-      patientName: 'Jane Doe',
-      patientEmail: 'patient@staypredict.health',
       age: 68,
       gender: 'Female',
       bloodType: 'O+',
@@ -21,8 +19,6 @@ const PRESETS = [
   {
     name: 'Adult Urgent (Oncology / Cancer)',
     data: {
-      patientName: 'Arthur Morgan',
-      patientEmail: 'arthur@staypredict.health',
       age: 54,
       gender: 'Male',
       bloodType: 'A+',
@@ -35,8 +31,6 @@ const PRESETS = [
   {
     name: 'Young Adult Elective (Arthritis)',
     data: {
-      patientName: 'Elena Rostova',
-      patientEmail: 'elena@staypredict.health',
       age: 29,
       gender: 'Female',
       bloodType: 'B-',
@@ -71,6 +65,16 @@ export default function PatientForm({ onSubmit, isLoading }) {
         const patients = await getRegisteredPatients();
         if (patients && patients.length > 0) {
           setRegisteredPatients(patients);
+          setFormData((prev) => {
+            if (!prev.patientEmail || prev.patientEmail === 'patient@hospital.org') {
+              return {
+                ...prev,
+                patientName: patients[0].name,
+                patientEmail: patients[0].email,
+              };
+            }
+            return prev;
+          });
         }
       } catch (err) {
         console.error('Failed to load registered patients:', err);
@@ -101,13 +105,23 @@ export default function PatientForm({ onSubmit, isLoading }) {
     }
   };
 
-  const applyPreset = (presetData) => {
-    setFormData(presetData);
+  // Only apply clinical parameters; do NOT overwrite patient identity!
+  const applyPreset = (presetClinicalData) => {
+    setFormData((prev) => ({
+      ...prev,
+      ...presetClinicalData,
+      patientName: prev.patientName,
+      patientEmail: prev.patientEmail,
+    }));
     setError('');
   };
 
   const handleReset = () => {
-    setFormData(INITIAL_STATE);
+    setFormData((prev) => ({
+      ...INITIAL_STATE,
+      patientName: prev.patientName,
+      patientEmail: prev.patientEmail,
+    }));
     setError('');
   };
 
