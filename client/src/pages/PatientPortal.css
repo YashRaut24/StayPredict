@@ -99,6 +99,7 @@
 
 .stay-summary-card,
 .milestones-card,
+.questions-card,
 .checklist-card,
 .hospital-support-card {
   background-color: var(--color-surface);
@@ -108,7 +109,8 @@
   box-shadow: var(--shadow-sm);
 }
 
-.stay-summary-header {
+.stay-summary-header,
+.card-top-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -127,7 +129,6 @@
   font-size: 13px;
   color: var(--color-text-muted);
   margin-top: 2px;
-  margin-bottom: 18px;
 }
 
 .active-badge {
@@ -136,6 +137,16 @@
   color: var(--color-success);
   background-color: var(--color-success-bg);
   border: 1px solid var(--color-success-border);
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+}
+
+.roadmap-phase-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-primary);
+  background-color: var(--color-primary-subtle);
+  border: 1px solid var(--color-primary-border);
   padding: 3px 10px;
   border-radius: var(--radius-sm);
 }
@@ -262,7 +273,15 @@
 .step-content {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
+  flex: 1;
+}
+
+.step-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
 }
 
 .step-title {
@@ -271,9 +290,72 @@
   color: var(--color-text-main);
 }
 
+.step-timing-pill {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
 .step-desc {
   font-size: 12px;
   color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+/* Questions Card */
+.questions-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.questions-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.questions-icon {
+  color: var(--color-primary);
+}
+
+.questions-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.question-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+
+.q-number {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--color-primary);
+  background-color: var(--color-primary-subtle);
+  border: 1px solid var(--color-primary-border);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.q-text {
+  font-size: 13px;
+  color: var(--color-text-main);
   line-height: 1.4;
 }
 

@@ -45,6 +45,14 @@ export const createPrediction = async (req, res) => {
                         dateOfAdmission
                     },
                     predictedStayDays: mlResponse.predicted_stay_days,
+                    prolongedStayRiskPct: mlResponse.prolonged_stay_risk_pct || 0,
+                    riskLevel: mlResponse.risk_level || 'Standard Risk',
+                    confidenceInterval: {
+                        minDays: mlResponse.confidence_interval?.min_days || mlResponse.predicted_stay_days,
+                        maxDays: mlResponse.confidence_interval?.max_days || mlResponse.predicted_stay_days
+                    },
+                    clinicalInterventions: mlResponse.clinical_interventions || [],
+                    recoveryRoadmap: mlResponse.recovery_roadmap || [],
                     modelVersion: mlResponse.model_version,
                     modelName: mlResponse.model_name
                 });
@@ -58,6 +66,14 @@ export const createPrediction = async (req, res) => {
             success: true,
             data: {
                 predictedStayDays: mlResponse.predicted_stay_days,
+                prolongedStayRiskPct: mlResponse.prolonged_stay_risk_pct || 0,
+                riskLevel: mlResponse.risk_level || 'Standard Risk',
+                confidenceInterval: mlResponse.confidence_interval || {
+                    min_days: mlResponse.predicted_stay_days,
+                    max_days: mlResponse.predicted_stay_days
+                },
+                clinicalInterventions: mlResponse.clinical_interventions || [],
+                recoveryRoadmap: mlResponse.recovery_roadmap || [],
                 modelVersion: mlResponse.model_version,
                 modelName: mlResponse.model_name,
                 historyId: savedRecord ? savedRecord._id : null,

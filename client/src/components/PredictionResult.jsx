@@ -1,8 +1,10 @@
-import React from 'react';
-import { Calendar, Clock, CheckCircle2, BedDouble, FileText, ClipboardList, ShieldAlert, HeartPulse } from 'lucide-react';
+import React, { useState } from 'react';
+import { Calendar, Clock, CheckCircle2, BedDouble, FileText, ClipboardList, ShieldAlert, HeartPulse, AlertTriangle, Sliders, ArrowRight } from 'lucide-react';
 import './PredictionResult.css';
 
-export default function PredictionResult({ prediction, patientData, onReset }) {
+export default function PredictionResult({ prediction, patientData, onReset, onSimulate }) {
+  const [simulatedAcuity, setSimulatedAcuity] = useState(patientData?.admissionType || 'Emergency');
+
   if (!prediction) {
     return (
       <div className="result-placeholder-card">
@@ -20,11 +22,11 @@ export default function PredictionResult({ prediction, patientData, onReset }) {
           </div>
           <div className="guarantee-item">
             <CheckCircle2 size={15} className="guarantee-icon" />
-            <span>Target discharge date calculation</span>
+            <span>Prolonged stay risk stratification</span>
           </div>
           <div className="guarantee-item">
             <CheckCircle2 size={15} className="guarantee-icon" />
-            <span>Standardized clinical care pathways</span>
+            <span>Clinical intervention recommendations</span>
           </div>
         </div>
       </div>
@@ -32,6 +34,10 @@ export default function PredictionResult({ prediction, patientData, onReset }) {
   }
 
   const days = Number(prediction.predictedStayDays);
+  const prolongedRisk = prediction.prolongedStayRiskPct || 0;
+  const riskLevel = prediction.riskLevel || 'Standard Risk';
+  const confidence = prediction.confidenceInterval || { min_days: days, max_days: days };
+  const interventions = prediction.clinicalInterventions || [];
 
   // Compute Estimated Discharge Date
   let dischargeDateStr = 'Pending admission date';
@@ -52,39 +58,63 @@ export default function PredictionResult({ prediction, patientData, onReset }) {
   let categoryLabel = 'Standard Inpatient Stay';
   let categoryClass = 'badge-moderate';
   let staffingRatio = '1 Nurse : 4 Patients';
-  let dischargeMilestone = 'Day 10 - Multidisciplinary discharge review & pharmacy medication clearance.';
 
   if (days <= 7) {
     wardPlacement = 'Short-Stay Unit / Observation Ward (Tier 1)';
     categoryLabel = 'Short-Stay / Fast-Track';
     categoryClass = 'badge-short';
     staffingRatio = '1 Nurse : 5 Patients';
-    dischargeMilestone = 'Day 3 - Early rehabilitation & outpatient transition review.';
   } else if (days > 15) {
     wardPlacement = 'Specialty Care / Long-Term Ward (Tier 3)';
     categoryLabel = 'Extended Inpatient Care';
     categoryClass = 'badge-extended';
     staffingRatio = '1 Nurse : 3 Patients';
-    dischargeMilestone = 'Day 12 - Extended care coordination, family conference & post-acute facility prep.';
   }
+
+  const isHighRisk = prolongedRisk >= 65;
+  const isModerateRisk = prolongedRisk >= 40 && prolongedRisk < 65;
 
   return (
     <div className="prediction-result-card">
       <div className="result-header">
-        <span className="result-eyebrow">Inpatient Bed Planning</span>
-        <h3 className="result-title">Projected Hospitalization Schedule</h3>
+        <span className="result-eyebrow">Clinical Decision Support</span>
+        <h3 className="result-title">Projected Inpatient Schedule & Risk</h3>
       </div>
 
+      {/* Hero Prediction & Confidence Window */}
       <div className="result-hero-box">
         <div className="hero-days-val">
           <span className="days-number">{days.toFixed(1)}</span>
           <span className="days-unit">Days Expected</span>
         </div>
-        <div className={`stay-category-badge ${categoryClass}`}>
-          {categoryLabel}
+        <div className="hero-sub-stats">
+          <span className={`stay-category-badge ${categoryClass}`}>
+            {categoryLabel}
+          </span>
+          <span className="confidence-pill">
+            80% Range: {confidence.min_days} - {confidence.max_days} days
+          </span>
         </div>
       </div>
 
+      {/* Prolonged Stay Risk Assessment */}
+      <div className={`risk-strat-box ${isHighRisk ? 'risk-high' : isModerateRisk ? 'risk-moderate' : 'risk-low'}`}>
+        <div className="risk-header-row">
+          <div className="risk-title-wrap">
+            <AlertTriangle size={16} />
+            <span className="risk-title">Prolonged Stay Risk Index:</span>
+          </div>
+          <span className="risk-pct-val">{prolongedRisk}%</span>
+        </div>
+        <div className="risk-bar-track">
+          <div className="risk-bar-fill" style={{ width: `${Math.min(100, prolongedRisk)}%` }}></div>
+        </div>
+        <span className="risk-desc">
+          {riskLevel} — {isHighRisk ? 'High probability of multi-week ward occupancy and post-acute delay.' : 'Standard turnaround anticipated.'}
+        </span>
+      </div>
+
+      {/* Target Discharge Window */}
       <div className="discharge-estimate-box">
         <div className="estimate-row">
           <Calendar size={16} className="estimate-icon" />
@@ -102,7 +132,7 @@ export default function PredictionResult({ prediction, patientData, onReset }) {
         </div>
       </div>
 
-      {/* Ward & Care Management */}
+      {/* Ward Placement */}
       <div className="ward-allocation-box">
         <div className="ward-title">
           <BedDouble size={15} /> Recommended Bed Placement
@@ -110,36 +140,47 @@ export default function PredictionResult({ prediction, patientData, onReset }) {
         <p className="ward-text">{wardPlacement}</p>
         <div className="ward-specs">
           <span className="ward-pill">Staffing: {staffingRatio}</span>
-          <span className="ward-pill">Monitoring: Continuous Vitals</span>
+          <span className="ward-pill">Monitoring: Continuous Telemetry</span>
         </div>
       </div>
 
-      {/* Clinical Discharge Pathway */}
-      <div className="pathway-box">
-        <div className="pathway-title">
-          <ClipboardList size={15} /> Key Discharge Milestone
+      {/* Actionable Clinical Interventions for Clinicians */}
+      {interventions.length > 0 && (
+        <div className="interventions-box">
+          <div className="interventions-title">
+            <ClipboardList size={15} /> Clinical Interventions for Care Team
+          </div>
+          <ul className="interventions-list">
+            {interventions.map((item, idx) => (
+              <li key={idx} className="intervention-item">
+                <span className="bullet-dot"></span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
         </div>
-        <p className="pathway-text">{dischargeMilestone}</p>
-      </div>
+      )}
 
-      <div className="patient-summary-table">
-        <div className="summary-row">
-          <span className="summary-label">Primary Diagnosis:</span>
-          <span className="summary-val">{patientData?.medicalCondition || 'N/A'}</span>
+      {/* Interactive What-If Scenario Simulator for Doctors */}
+      <div className="what-if-simulator-card">
+        <div className="simulator-header">
+          <Sliders size={15} />
+          <span className="simulator-title">Clinician "What-If" Acuity Simulator</span>
         </div>
-        <div className="summary-row">
-          <span className="summary-label">Admission Acuity:</span>
-          <span className="summary-val">{patientData?.admissionType || 'N/A'}</span>
-        </div>
-        <div className="summary-row">
-          <span className="summary-label">Coverage / Payer:</span>
-          <span className="summary-val">{patientData?.insuranceProvider || 'N/A'}</span>
-        </div>
-        <div className="summary-row">
-          <span className="summary-label">Census Status:</span>
-          <span className="census-badge">
-            <CheckCircle2 size={12} /> Logged in Active Inpatient Census
-          </span>
+        <p className="simulator-desc">
+          Test clinical impact on length of stay if patient triage urgency is adjusted:
+        </p>
+        <div className="simulator-buttons">
+          {['Emergency', 'Urgent', 'Elective'].map((type) => (
+            <button
+              key={type}
+              type="button"
+              className={`sim-btn ${patientData?.admissionType === type ? 'active' : ''}`}
+              onClick={() => onSimulate && onSimulate({ ...patientData, admissionType: type })}
+            >
+              {type}
+            </button>
+          ))}
         </div>
       </div>
 

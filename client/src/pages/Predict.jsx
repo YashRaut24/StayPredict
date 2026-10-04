@@ -28,6 +28,21 @@ export default function Predict() {
     }
   };
 
+  const handleSimulate = async (simulatedFormData) => {
+    setIsLoading(true);
+    setApiError('');
+    try {
+      const response = await createPrediction(simulatedFormData);
+      setPrediction(response.data);
+      setPatientData(simulatedFormData);
+      setSuccessBanner(`Simulated stay adjustment for ${simulatedFormData.admissionType} admission acuity.`);
+    } catch (err) {
+      setApiError('Simulation error: ' + err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleReset = () => {
     setPrediction(null);
     setPatientData(null);
@@ -67,6 +82,7 @@ export default function Predict() {
             prediction={prediction}
             patientData={patientData}
             onReset={handleReset}
+            onSimulate={handleSimulate}
           />
         </div>
       </div>

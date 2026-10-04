@@ -3,8 +3,8 @@ StayPredict — Pydantic Schemas for Request & Response Validation
 """
 from enum import Enum
 from datetime import date, datetime
-from typing import Dict, Any, List
-from pydantic import BaseModel, Field, field_validator
+from typing import Dict, Any, List, Optional
+from pydantic import BaseModel, Field
 
 
 # Enums matching exact categories from training data
@@ -71,8 +71,25 @@ class PatientPredictionRequest(BaseModel):
     }
 
 
+class ConfidenceInterval(BaseModel):
+    min_days: float
+    max_days: float
+
+
+class RoadmapMilestone(BaseModel):
+    phase: str
+    target_day: str
+    title: str
+    description: str
+
+
 class PredictionResponse(BaseModel):
     predicted_stay_days: float = Field(..., description="Predicted length of hospital stay in days")
+    prolonged_stay_risk_pct: float = Field(..., description="Ensemble probability of stay exceeding 14 days")
+    risk_level: str = Field(..., description="Prolonged stay risk category (Low, Moderate, High Risk)")
+    confidence_interval: ConfidenceInterval = Field(..., description="80% confidence window from model trees")
+    clinical_interventions: List[str] = Field(..., description="Actionable clinical care protocols for clinicians")
+    recovery_roadmap: List[RoadmapMilestone] = Field(..., description="Day-by-day care trajectory for patients")
     model_version: str = Field(..., description="Version of the model that generated prediction")
     model_name: str = Field(..., description="Algorithm used for inference")
     status: str = Field("success", description="Prediction status")

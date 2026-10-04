@@ -1,6 +1,6 @@
 """
 StayPredict — FastAPI Machine Learning Microservice
-Exposes REST endpoints for hospital length-of-stay predictions.
+Exposes REST endpoints for hospital length-of-stay predictions with risk assessment and care roadmaps.
 """
 import datetime
 from fastapi import FastAPI, HTTPException, status
@@ -59,12 +59,17 @@ def get_model_info():
 @app.post("/predict", response_model=PredictionResponse, status_code=status.HTTP_200_OK, tags=["Inference"])
 def predict_stay(request: PatientPredictionRequest):
     """
-    Predicts patient length of stay in days based on pre-admission intake attributes.
+    Predicts patient length of stay, calculates prolonged stay risk, clinical interventions, and recovery roadmap.
     """
     try:
         result = service_predictor.predict_length_of_stay(request.model_dump())
         return {
             "predicted_stay_days": result["predicted_stay_days"],
+            "prolonged_stay_risk_pct": result["prolonged_stay_risk_pct"],
+            "risk_level": result["risk_level"],
+            "confidence_interval": result["confidence_interval"],
+            "clinical_interventions": result["clinical_interventions"],
+            "recovery_roadmap": result["recovery_roadmap"],
             "model_version": result["model_version"],
             "model_name": result["model_name"],
             "status": "success"

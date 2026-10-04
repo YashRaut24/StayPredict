@@ -28,6 +28,26 @@ const PredictionSchema = new mongoose.Schema(
             type: Number,
             required: true
         },
+        prolongedStayRiskPct: {
+            type: Number,
+            default: 0
+        },
+        riskLevel: {
+            type: String,
+            default: 'Standard Risk'
+        },
+        confidenceInterval: {
+            minDays: { type: Number, default: 0 },
+            maxDays: { type: Number, default: 0 }
+        },
+        clinicalInterventions: {
+            type: [String],
+            default: []
+        },
+        recoveryRoadmap: {
+            type: [mongoose.Schema.Types.Mixed],
+            default: []
+        },
         modelVersion: {
             type: String,
             default: '1.0.0'
