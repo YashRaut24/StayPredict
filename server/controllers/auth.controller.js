@@ -169,3 +169,22 @@ export const getMe = async (req, res) => {
         });
     }
 };
+
+export const getRegisteredPatients = async (req, res) => {
+    try {
+        const patients = await User.find({ role: 'patient' })
+            .select('name email department createdAt')
+            .sort({ createdAt: -1 })
+            .lean();
+        return res.status(200).json({
+            success: true,
+            count: patients.length,
+            data: patients
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve registered patients: ' + error.message
+        });
+    }
+};

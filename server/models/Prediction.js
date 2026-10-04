@@ -15,6 +15,15 @@ const PredictionSchema = new mongoose.Schema(
             type: String,
             default: ''
         },
+        doctorId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            default: null
+        },
+        doctorName: {
+            type: String,
+            default: ''
+        },
         inputFeatures: {
             age: { type: Number, required: true },
             gender: { type: String, required: true },

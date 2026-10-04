@@ -1,7 +1,26 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getPredictionHistory } from '../services/api';
-import { Calendar, Clock, BedDouble, CheckCircle2, AlertCircle, Phone, FileText, HeartPulse, ChevronRight, User, HelpCircle, Activity, ShieldAlert } from 'lucide-react';
+import {
+  Calendar,
+  Clock,
+  BedDouble,
+  CheckCircle2,
+  AlertCircle,
+  Phone,
+  FileText,
+  HeartPulse,
+  User,
+  HelpCircle,
+  Activity,
+  ShieldCheck,
+  Stethoscope,
+  Info,
+  CalendarCheck,
+  Building2,
+  ArrowRight
+} from 'lucide-react';
 import RedFlagAlerts from '../components/RedFlagAlerts';
 import MedicationSchedule from '../components/MedicationSchedule';
 import './PatientPortal.css';
@@ -30,50 +49,185 @@ export default function PatientPortal() {
       try {
         const res = await getPredictionHistory();
         if (res.data && res.data.length > 0) {
+          // Real admission found for this patient
           setPatientRecord(res.data[0]);
+        } else {
+          setPatientRecord(null);
         }
       } catch (err) {
         console.error('Failed to load patient stay data:', err);
+        setPatientRecord(null);
       } finally {
         setLoading(false);
       }
     }
     loadData();
-  }, []);
+  }, [user]);
 
-  const input = patientRecord?.inputFeatures || {
-    medicalCondition: 'Asthma Management',
-    admissionType: 'Emergency',
-    dateOfAdmission: new Date().toISOString().split('T')[0],
-  };
+  // Loading state
+  if (loading) {
+    return (
+      <div className="patient-portal-page">
+        <div className="portal-loading-card">
+          <Activity size={28} className="loading-icon spinning" />
+          <h2 className="loading-title">Retrieving Inpatient Medical Records...</h2>
+          <p className="loading-desc">Synchronizing with hospital admission registry and clinical length-of-stay engine.</p>
+        </div>
+      </div>
+    );
+  }
 
-  const stayDays = patientRecord ? Number(patientRecord.predictedStayDays) : 5.5;
-  const roadmap = patientRecord?.recoveryRoadmap || [
-    {
-      phase: 'Intake & Clinical Stabilization',
-      target_day: 'Days 1 - 2',
-      title: 'Clinical Intake & Treatment Baseline',
-      description: 'Admission vitals verified, initial therapy initiated, and baseline monitoring established.'
-    },
-    {
-      phase: 'Therapeutic Response & Review',
-      target_day: 'Days 3 - 5',
-      title: 'Mid-Stay Clinical Evaluation',
-      description: 'Care team rounds evaluate therapeutic response, lab biomarkers, and symptom improvement.'
-    },
-    {
-      phase: 'Discharge Clearance & Preparation',
-      target_day: '48h Prior to Discharge',
-      title: 'Pre-Discharge Clearance',
-      description: 'Pharmacy take-home medication reconciliation, family transport confirmation, and outpatient follow-up booking.'
-    },
-    {
-      phase: 'Discharge Day & Outpatient Transition',
-      target_day: 'Discharge Morning',
-      title: 'Physician Handover & Home Release',
-      description: 'Final morning vitals sign-off, delivery of discharge packet, and formal transition to outpatient primary care.'
-    }
-  ];
+  // Real state: Patient has NOT been admitted by a doctor yet
+  if (!patientRecord) {
+    return (
+      <div className="patient-portal-page">
+        {/* Header */}
+        <section className="portal-header-card">
+          <div className="portal-header-left">
+            <div className="patient-avatar-box">
+              <User size={32} />
+            </div>
+            <div>
+              <span className="portal-badge badge-outpatient">Outpatient Account Active</span>
+              <h1 className="portal-title">Welcome, {user?.name || 'Valued Patient'}</h1>
+              <p className="portal-desc">
+                Hospital Patient Account: <strong>{user?.email}</strong>
+              </p>
+            </div>
+          </div>
+          <div className="patient-meta-pill">
+            <span className="meta-label">Clinical Status:</span>
+            <span className="meta-val status-awaiting">Awaiting Inpatient Admission Intake</span>
+          </div>
+        </section>
+
+        {/* Informative Notice: No Active Inpatient Admission On File */}
+        <div className="no-admission-card">
+          <div className="no-admission-content">
+            <div className="no-admission-icon-box">
+              <AlertCircle size={32} />
+            </div>
+            <div className="no-admission-text">
+              <h2 className="no-admission-title">No Active Inpatient Admission On File</h2>
+              <p className="no-admission-lead">
+                Your patient account is registered in our hospital system under <strong>{user?.email}</strong>, but an attending physician or triage coordinator has not yet submitted an inpatient admission assessment for you.
+              </p>
+              <div className="no-admission-steps">
+                <div className="step-item-box">
+                  <span className="step-num-pill">1</span>
+                  <div>
+                    <strong>Clinical Triage Assessment:</strong>
+                    <p>When you arrive at the hospital, your clinical care team records your admission parameters (urgency, diagnosis, vital acuity).</p>
+                  </div>
+                </div>
+                <div className="step-item-box">
+                  <span className="step-num-pill">2</span>
+                  <div>
+                    <strong>ML Length of Stay Generation:</strong>
+                    <p>The admitting doctor evaluates your expected stay trajectory using the Random Forest clinical model.</p>
+                  </div>
+                </div>
+                <div className="step-item-box">
+                  <span className="step-num-pill">3</span>
+                  <div>
+                    <strong>Portal Activation:</strong>
+                    <p>Once admitted, your target discharge date, personalized 4-phase recovery roadmap, and take-home medications will automatically activate on this page.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Registered Outpatient Details Card */}
+        <div className="outpatient-profile-card">
+          <h3 className="profile-heading">Registered Patient Profile</h3>
+          <div className="profile-specs-grid">
+            <div className="spec-box">
+              <span className="spec-label">Patient Name:</span>
+              <span className="spec-val">{user?.name}</span>
+            </div>
+            <div className="spec-box">
+              <span className="spec-label">Registered Email:</span>
+              <span className="spec-val">{user?.email}</span>
+            </div>
+            <div className="spec-box">
+              <span className="spec-label">Assigned Department:</span>
+              <span className="spec-val">{user?.department || 'General Patient'}</span>
+            </div>
+            <div className="spec-box">
+              <span className="spec-label">Inpatient Census Record:</span>
+              <span className="spec-val text-pending">Pending Doctor Admission</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Testing & Doctor Linking Guidance */}
+        <div className="testing-guidance-card">
+          <div className="guidance-header">
+            <Stethoscope size={20} className="guidance-icon" />
+            <h4 className="guidance-title">Doctor Admission Workflow (How It Works)</h4>
+          </div>
+          <p className="guidance-body">
+            To view a live personalized stay plan for this account, a clinical staff member or physician must admit <strong>{user?.email}</strong> in the hospital system.
+          </p>
+          <div className="guidance-callout">
+            <span>
+              <strong>Evaluator / Demo Step:</strong> If you are testing the system, sign out and log in with a <strong>Clinical Staff / Doctor</strong> account (or click Demo Staff at login). Then go to <strong>Admit & Plan Stay</strong>, enter or select <strong>{user?.email}</strong> as the patient email, and generate a stay plan. When you log back in as this patient, your personalized recovery dashboard will be active!
+            </span>
+          </div>
+        </div>
+
+        {/* Hospital Support Card */}
+        <div className="hospital-support-card">
+          <h4 className="support-title">Need Immediate Medical Assistance?</h4>
+          <p className="support-desc">
+            If you are experiencing a medical emergency, dial 911 or visit the nearest hospital emergency department immediately.
+          </p>
+          <div className="support-contact">
+            <Phone size={16} className="contact-icon" />
+            <span>Hospital Central Reception: +1 (800) 555-CARE | Ext. 100</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Real Inpatient Record Present (Admitted by Doctor)
+  const input = patientRecord.inputFeatures;
+  const stayDays = Number(patientRecord.predictedStayDays);
+  const prolongedRisk = patientRecord.prolongedStayRiskPct || 0;
+  const confInterval = patientRecord.confidenceInterval || { minDays: stayDays, maxDays: stayDays };
+  const doctorName = patientRecord.doctorName || 'Attending Physician';
+
+  const roadmap = patientRecord.recoveryRoadmap && patientRecord.recoveryRoadmap.length > 0
+    ? patientRecord.recoveryRoadmap
+    : [
+        {
+          phase: 'Intake & Clinical Stabilization',
+          target_day: 'Days 1 - 2',
+          title: 'Clinical Intake & Treatment Baseline',
+          description: 'Admission vitals verified, initial therapy initiated, and baseline monitoring established.'
+        },
+        {
+          phase: 'Therapeutic Response & Review',
+          target_day: 'Mid-Stay',
+          title: 'Therapeutic Evaluation & Ward Rounds',
+          description: 'Care team rounds evaluate therapeutic response, lab biomarkers, and symptom improvement.'
+        },
+        {
+          phase: 'Discharge Clearance & Preparation',
+          target_day: '48h Prior to Discharge',
+          title: 'Pre-Discharge Clearance',
+          description: 'Pharmacy take-home medication reconciliation, family transport confirmation, and outpatient follow-up booking.'
+        },
+        {
+          phase: 'Discharge Day & Outpatient Transition',
+          target_day: 'Discharge Morning',
+          title: 'Physician Handover & Home Release',
+          description: 'Final morning vitals sign-off, delivery of discharge packet, and formal transition to outpatient primary care.'
+        }
+      ];
 
   let dischargeDateStr = 'Pending evaluation';
   let followUpDateStr = 'Within 7 days of discharge';
@@ -96,7 +250,7 @@ export default function PatientPortal() {
     });
   }
 
-  // Disease-specific discharge questions for patients
+  // Condition-specific discharge questions
   const conditionQuestions = {
     Asthma: [
       'What should my daily peak flow meter reading be before I use my rescue inhaler?',
@@ -145,16 +299,16 @@ export default function PatientPortal() {
             <User size={32} />
           </div>
           <div>
-            <span className="portal-badge">Patient Recovery Portal</span>
-            <h1 className="portal-title">Welcome, {user?.name || 'Valued Patient'}</h1>
+            <span className="portal-badge">Active Inpatient Stay Plan</span>
+            <h1 className="portal-title">Welcome, {patientRecord.patientName || user?.name}</h1>
             <p className="portal-desc">
-              Your personalized recovery trajectory, anticipated discharge window, and clinical readiness guide.
+              Attending Physician: <strong>{doctorName}</strong> | Diagnosis: <strong>{input.medicalCondition}</strong>
             </p>
           </div>
         </div>
         <div className="patient-meta-pill">
-          <span className="meta-label">Primary Care Unit:</span>
-          <span className="meta-val">Acute Medical — Room 304</span>
+          <span className="meta-label">Admission Category:</span>
+          <span className="meta-val">{input.admissionType} ({input.medicalCondition})</span>
         </div>
       </section>
 
@@ -164,8 +318,8 @@ export default function PatientPortal() {
         <div className="portal-col-main">
           <div className="stay-summary-card">
             <div className="stay-summary-header">
-              <h2 className="card-title">Inpatient Stay Timeline</h2>
-              <span className="active-badge">Active Inpatient Plan</span>
+              <h2 className="card-title">Inpatient Stay Timeline & Target Discharge</h2>
+              <span className="active-badge">Verified Admission</span>
             </div>
 
             <div className="stay-highlight-box">
@@ -178,7 +332,9 @@ export default function PatientPortal() {
               <div className="highlight-item">
                 <span className="hl-label">Expected Care Duration</span>
                 <span className="hl-value-secondary">{stayDays.toFixed(1)} Days</span>
-                <span className="hl-note">Clinical benchmark for {input.medicalCondition}</span>
+                <span className="hl-note">
+                  80% CI: {confInterval.minDays.toFixed(1)} – {confInterval.maxDays.toFixed(1)} days
+                </span>
               </div>
             </div>
 
@@ -197,18 +353,26 @@ export default function PatientPortal() {
                 <span className="spec-val">{input.admissionType}</span>
               </div>
               <div className="spec-item">
+                <span className="spec-label">Insurance Payer:</span>
+                <span className="spec-val">{input.insuranceProvider}</span>
+              </div>
+              <div className="spec-item">
+                <span className="spec-label">Prolonged Stay Risk:</span>
+                <span className="spec-val">{prolongedRisk}% ({patientRecord.riskLevel || 'Standard'})</span>
+              </div>
+              <div className="spec-item">
                 <span className="spec-label">Recommended Outpatient Visit:</span>
                 <span className="spec-val">{followUpDateStr}</span>
               </div>
             </div>
           </div>
 
-          {/* Recovery Milestones Stepper (Dynamic from ML Roadmap) */}
+          {/* Recovery Milestones Stepper (Dynamic from Real ML Roadmap) */}
           <div className="milestones-card">
             <div className="card-top-header">
               <div>
                 <h3 className="card-title">Your Personalized Recovery Roadmap</h3>
-                <p className="card-subtitle">AI-calculated care phases tailored to your diagnosis</p>
+                <p className="card-subtitle">AI-calculated care phases tailored to {input.medicalCondition}</p>
               </div>
               <span className="roadmap-phase-badge">Phase 2 Active</span>
             </div>
@@ -247,7 +411,7 @@ export default function PatientPortal() {
               <h3 className="card-title">Recommended Questions for Your Care Team</h3>
             </div>
             <p className="card-subtitle">
-              Prior to returning home, review these condition-specific recovery questions with your bedside clinician:
+              Prior to returning home, review these {input.medicalCondition}-specific recovery questions with Dr. {doctorName}:
             </p>
             <ul className="questions-list">
               {questions.map((q, idx) => (

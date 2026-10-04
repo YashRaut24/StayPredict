@@ -193,6 +193,24 @@
   white-space: nowrap;
 }
 
+.patient-profile-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.patient-name-text {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.patient-email-text {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  font-family: var(--font-family-mono);
+}
+
 .patient-demographic {
   font-weight: 600;
   color: var(--color-text-main);

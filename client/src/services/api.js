@@ -63,6 +63,22 @@ export async function fetchCurrentUser() {
 }
 
 /**
+ * Authentication: Fetch registered patients list (for Doctors / Staff admission intake)
+ */
+export async function getRegisteredPatients() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/patients`, {
+      headers: getAuthHeaders(),
+    });
+    const data = await response.json();
+    if (!response.ok) return [];
+    return data.data || [];
+  } catch (err) {
+    return [];
+  }
+}
+
+/**
  * Send pre-admission patient data to Express API Gateway
  */
 export async function createPrediction(patientData) {

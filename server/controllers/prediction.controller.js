@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import Prediction from '../models/Prediction.js';
+import User from '../models/User.js';
 import { callMLServicePredict, checkMLServiceHealth } from '../services/ml.service.js';
 
 export const createPrediction = async (req, res) => {
@@ -11,7 +12,8 @@ export const createPrediction = async (req, res) => {
         insuranceProvider,
         admissionType,
         dateOfAdmission,
-        patientName
+        patientName,
+        patientEmail
     } = req.body;
 
     // Basic validation at Express Gateway
@@ -31,10 +33,34 @@ export const createPrediction = async (req, res) => {
         // 2. Persist to MongoDB if connected
         if (mongoose.connection.readyState === 1) {
             try {
+                let finalPatientEmail = (patientEmail || '').toLowerCase().trim();
+                let finalPatientName = (patientName || '').trim();
+                let linkedUserId = null;
+
+                if (req.user?.role === 'patient') {
+                    // Patient self-service query
+                    finalPatientEmail = req.user.email.toLowerCase().trim();
+                    finalPatientName = req.user.name;
+                    linkedUserId = req.user.id;
+                } else if (finalPatientEmail) {
+                    // Staff/Doctor entered patient email - check if account exists in database
+                    const matchedUser = await User.findOne({ email: finalPatientEmail });
+                    if (matchedUser) {
+                        linkedUserId = matchedUser._id;
+                        if (!finalPatientName) finalPatientName = matchedUser.name;
+                    }
+                }
+
+                if (!finalPatientName) {
+                    finalPatientName = finalPatientEmail ? finalPatientEmail.split('@')[0] : 'Inpatient Record';
+                }
+
                 savedRecord = await Prediction.create({
-                    userId: req.user?.id || null,
-                    patientName: patientName || (req.user ? req.user.name : 'Inpatient Record'),
-                    patientEmail: req.user ? req.user.email : '',
+                    userId: linkedUserId,
+                    patientName: finalPatientName,
+                    patientEmail: finalPatientEmail,
+                    doctorId: req.user ? req.user.id : null,
+                    doctorName: req.user ? req.user.name : 'Attending Physician',
                     inputFeatures: {
                         age: Number(age),
                         gender,
@@ -104,10 +130,11 @@ export const getPredictionHistory = async (req, res) => {
 
         // Role-based visibility: Patients only see their own admissions!
         if (req.user && req.user.role === 'patient') {
+            const userEmail = (req.user.email || '').toLowerCase().trim();
             filter = {
                 $or: [
                     { userId: req.user.id },
-                    { patientEmail: req.user.email }
+                    { patientEmail: new RegExp(`^${userEmail}$`, 'i') }
                 ]
             };
         }

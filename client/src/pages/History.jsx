@@ -183,10 +183,15 @@ export default function History() {
                         }) : 'N/A'}
                       </td>
                       <td>
-                        <span className="patient-demographic">
-                          {input.age}y / {input.gender}
-                        </span>
-                        <span className="patient-blood">{input.bloodType}</span>
+                        <div className="patient-profile-cell">
+                          <strong className="patient-name-text">{item.patientName || 'Inpatient Record'}</strong>
+                          {item.patientEmail && (
+                            <span className="patient-email-text">{item.patientEmail}</span>
+                          )}
+                          <span className="patient-blood">
+                            {input.age}y / {input.gender} • {input.bloodType}
+                          </span>
+                        </div>
                       </td>
                       <td>
                         <span className="cell-condition">{input.medicalCondition}</span>

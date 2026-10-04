@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
-import { CalendarCheck, RotateCcw, Stethoscope } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { CalendarCheck, RotateCcw, Stethoscope, UserCheck, Users, Mail, User } from 'lucide-react';
+import { getRegisteredPatients } from '../services/api';
 import './PatientForm.css';
 
 const PRESETS = [
   {
     name: 'Elderly Emergency (Asthma)',
     data: {
+      patientName: 'Jane Doe',
+      patientEmail: 'patient@staypredict.health',
       age: 68,
       gender: 'Female',
       bloodType: 'O+',
@@ -18,6 +21,8 @@ const PRESETS = [
   {
     name: 'Adult Urgent (Oncology / Cancer)',
     data: {
+      patientName: 'Arthur Morgan',
+      patientEmail: 'arthur@staypredict.health',
       age: 54,
       gender: 'Male',
       bloodType: 'A+',
@@ -30,6 +35,8 @@ const PRESETS = [
   {
     name: 'Young Adult Elective (Arthritis)',
     data: {
+      patientName: 'Elena Rostova',
+      patientEmail: 'elena@staypredict.health',
       age: 29,
       gender: 'Female',
       bloodType: 'B-',
@@ -42,6 +49,8 @@ const PRESETS = [
 ];
 
 const INITIAL_STATE = {
+  patientName: 'John Doe',
+  patientEmail: 'patient@hospital.org',
   age: 45,
   gender: 'Male',
   bloodType: 'O+',
@@ -53,7 +62,22 @@ const INITIAL_STATE = {
 
 export default function PatientForm({ onSubmit, isLoading }) {
   const [formData, setFormData] = useState(INITIAL_STATE);
+  const [registeredPatients, setRegisteredPatients] = useState([]);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    async function loadPatients() {
+      try {
+        const patients = await getRegisteredPatients();
+        if (patients && patients.length > 0) {
+          setRegisteredPatients(patients);
+        }
+      } catch (err) {
+        console.error('Failed to load registered patients:', err);
+      }
+    }
+    loadPatients();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -61,6 +85,20 @@ export default function PatientForm({ onSubmit, isLoading }) {
       ...prev,
       [name]: name === 'age' ? (value === '' ? '' : Number(value)) : value,
     }));
+  };
+
+  const handlePatientSelect = (e) => {
+    const selectedEmail = e.target.value;
+    if (!selectedEmail) return;
+
+    const matched = registeredPatients.find((p) => p.email === selectedEmail);
+    if (matched) {
+      setFormData((prev) => ({
+        ...prev,
+        patientName: matched.name,
+        patientEmail: matched.email,
+      }));
+    }
   };
 
   const applyPreset = (presetData) => {
@@ -93,8 +131,73 @@ export default function PatientForm({ onSubmit, isLoading }) {
       <div className="form-header">
         <h2 className="form-title">Inpatient Admission Details</h2>
         <p className="form-subtitle">
-          Record initial patient admission parameters to generate bed allocation timelines and an estimated discharge window.
+          Record initial patient admission parameters to generate bed allocation timelines, prolonged stay risk assessment, and personalized recovery roadmaps.
         </p>
+      </div>
+
+      {/* Patient Account Link Banner */}
+      <div className="patient-link-banner">
+        <div className="patient-link-header">
+          <UserCheck size={16} className="link-icon" />
+          <span className="link-heading">Patient Account Linking & Identity</span>
+        </div>
+        <p className="link-subheading">
+          Select an existing registered patient or enter their login email so their AI Length of Stay plan automatically syncs to their Patient Portal.
+        </p>
+
+        <div className="link-inputs-grid">
+          {registeredPatients.length > 0 && (
+            <div className="form-group link-group-full">
+              <label htmlFor="registeredPatientSelect" className="form-label">
+                Quick Select Registered Patient:
+              </label>
+              <select
+                id="registeredPatientSelect"
+                className="form-select"
+                onChange={handlePatientSelect}
+                value={formData.patientEmail || ''}
+              >
+                <option value="">-- Choose from {registeredPatients.length} registered patient accounts --</option>
+                {registeredPatients.map((p) => (
+                  <option key={p.email} value={p.email}>
+                    {p.name} ({p.email})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div className="form-group">
+            <label htmlFor="patientName" className="form-label">
+              Patient Full Name <span className="required">*</span>
+            </label>
+            <input
+              id="patientName"
+              name="patientName"
+              type="text"
+              className="form-input"
+              value={formData.patientName}
+              onChange={handleChange}
+              placeholder="e.g. John Doe"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="patientEmail" className="form-label">
+              Patient Login Email (for Portal Sync)
+            </label>
+            <input
+              id="patientEmail"
+              name="patientEmail"
+              type="email"
+              className="form-input"
+              value={formData.patientEmail}
+              onChange={handleChange}
+              placeholder="e.g. patient@hospital.org"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="preset-bar">
@@ -183,7 +286,7 @@ export default function PatientForm({ onSubmit, isLoading }) {
           {/* Medical Condition */}
           <div className="form-group">
             <label htmlFor="medicalCondition" className="form-label">
-              Primary Diagnosis / Clinical Condition <span className="required">*</span>
+              Primary Diagnosis <span className="required">*</span>
             </label>
             <select
               id="medicalCondition"
@@ -193,38 +296,19 @@ export default function PatientForm({ onSubmit, isLoading }) {
               value={formData.medicalCondition}
               onChange={handleChange}
             >
-              <option value="Diabetes">Diabetes</option>
-              <option value="Hypertension">Hypertension</option>
-              <option value="Asthma">Asthma</option>
-              <option value="Arthritis">Arthritis</option>
-              <option value="Cancer">Oncology / Cancer</option>
-              <option value="Obesity">Obesity Management</option>
-            </select>
-          </div>
-
-          {/* Admission Type */}
-          <div className="form-group">
-            <label htmlFor="admissionType" className="form-label">
-              Admission Urgency Level <span className="required">*</span>
-            </label>
-            <select
-              id="admissionType"
-              name="admissionType"
-              required
-              className="form-select"
-              value={formData.admissionType}
-              onChange={handleChange}
-            >
-              <option value="Emergency">Emergency (Immediate Care)</option>
-              <option value="Urgent">Urgent (Within 24 Hours)</option>
-              <option value="Elective">Elective (Scheduled Inpatient)</option>
+              <option value="Asthma">Asthma Management</option>
+              <option value="Diabetes">Diabetes & Metabolic Crisis</option>
+              <option value="Cancer">Oncology & Chemotherapy</option>
+              <option value="Hypertension">Hypertension Crisis</option>
+              <option value="Arthritis">Arthritis & Joint Replacement</option>
+              <option value="Obesity">Severe Obesity & Metabolic Care</option>
             </select>
           </div>
 
           {/* Insurance Provider */}
           <div className="form-group">
             <label htmlFor="insuranceProvider" className="form-label">
-              Insurance / Payer Coverage <span className="required">*</span>
+              Payer / Insurance Provider <span className="required">*</span>
             </label>
             <select
               id="insuranceProvider"
@@ -234,18 +318,38 @@ export default function PatientForm({ onSubmit, isLoading }) {
               value={formData.insuranceProvider}
               onChange={handleChange}
             >
-              <option value="Aetna">Aetna Healthcare</option>
-              <option value="Blue Cross">Blue Cross Blue Shield</option>
-              <option value="Cigna">Cigna Health</option>
               <option value="Medicare">Medicare</option>
+              <option value="Medicaid">Medicaid</option>
+              <option value="Blue Cross">Blue Cross</option>
+              <option value="Aetna">Aetna</option>
               <option value="UnitedHealthcare">UnitedHealthcare</option>
+              <option value="Cigna">Cigna</option>
+            </select>
+          </div>
+
+          {/* Admission Type */}
+          <div className="form-group">
+            <label htmlFor="admissionType" className="form-label">
+              Admission Urgency <span className="required">*</span>
+            </label>
+            <select
+              id="admissionType"
+              name="admissionType"
+              required
+              className="form-select"
+              value={formData.admissionType}
+              onChange={handleChange}
+            >
+              <option value="Emergency">Emergency (Immediate stabilization)</option>
+              <option value="Urgent">Urgent (Unscheduled acute care)</option>
+              <option value="Elective">Elective (Planned procedural intake)</option>
             </select>
           </div>
 
           {/* Date of Admission */}
           <div className="form-group form-group-full">
             <label htmlFor="dateOfAdmission" className="form-label">
-              Admission Date <span className="required">*</span>
+              Date of Admission <span className="required">*</span>
             </label>
             <input
               id="dateOfAdmission"
@@ -256,16 +360,13 @@ export default function PatientForm({ onSubmit, isLoading }) {
               value={formData.dateOfAdmission}
               onChange={handleChange}
             />
-            <span className="field-hint">
-              Used to schedule clinical care milestones, ward bed booking, and expected discharge review.
-            </span>
           </div>
         </div>
 
         <div className="form-actions">
           <button
             type="button"
-            className="btn btn-secondary"
+            className="btn-reset"
             onClick={handleReset}
             disabled={isLoading}
           >
@@ -274,14 +375,14 @@ export default function PatientForm({ onSubmit, isLoading }) {
 
           <button
             type="submit"
-            className="btn btn-primary"
+            className="btn-submit"
             disabled={isLoading}
           >
             {isLoading ? (
-              <span className="btn-loading">Calculating Inpatient Stay Plan...</span>
+              <span className="spinner-text">Evaluating Random Forest Model...</span>
             ) : (
               <>
-                <CalendarCheck size={16} /> Plan Inpatient Stay
+                <CalendarCheck size={16} /> Admit & Plan Inpatient Stay
               </>
             )}
           </button>

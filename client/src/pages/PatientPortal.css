@@ -436,3 +436,229 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Loading State */
+.portal-loading-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 48px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.loading-icon {
+  color: var(--color-primary);
+}
+
+.loading-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.loading-desc {
+  font-size: 13.5px;
+  color: var(--color-text-muted);
+}
+
+/* No Admission State */
+.badge-outpatient {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border-dark);
+  color: var(--color-text-muted);
+}
+
+.status-awaiting {
+  color: var(--color-warning) !important;
+}
+
+.no-admission-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-warning);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  box-shadow: var(--shadow-sm);
+  text-align: left;
+}
+
+.no-admission-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.no-admission-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-warning-bg);
+  border: 1px solid var(--color-warning-border);
+  color: var(--color-warning);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.no-admission-text {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.no-admission-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-text-main);
+  letter-spacing: -0.3px;
+}
+
+.no-admission-lead {
+  font-size: 14.5px;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.no-admission-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+  border-top: 1px solid var(--color-border);
+  padding-top: 16px;
+}
+
+.step-item-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--color-text-main);
+}
+
+.step-item-box strong {
+  display: block;
+  font-size: 13.5px;
+  color: var(--color-text-main);
+  margin-bottom: 2px;
+}
+
+.step-item-box p {
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.step-num-pill {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: var(--color-primary-subtle);
+  border: 1px solid var(--color-primary-border);
+  color: var(--color-primary);
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Outpatient Profile Card */
+.outpatient-profile-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+  box-shadow: var(--shadow-sm);
+  text-align: left;
+}
+
+.profile-heading {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 10px;
+}
+
+.profile-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.spec-box {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.text-pending {
+  color: var(--color-warning) !important;
+  font-weight: 700;
+}
+
+/* Testing Guidance Card */
+.testing-guidance-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+  box-shadow: var(--shadow-sm);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.guidance-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.guidance-header .guidance-icon {
+  color: var(--color-primary);
+}
+
+.guidance-header .guidance-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.guidance-body {
+  font-size: 13.5px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.guidance-callout {
+  background-color: var(--color-primary-subtle);
+  border: 1px solid var(--color-primary-border);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  font-size: 12.5px;
+  color: var(--color-text-main);
+  line-height: 1.5;
+}
+
+@media (max-width: 800px) {
+  .profile-specs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
